@@ -6,8 +6,6 @@ import Books from "./components/Books";
 import Search from "./components/Search";
 
 class BooksApp extends Component {
-  state = {};
-
   render() {
     return (
       <div className="app">
