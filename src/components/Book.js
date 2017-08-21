@@ -1,7 +1,8 @@
 import React from "react";
 
 const Book = props => {
-  const { title, image, authors } = props.data;
+  const { title, authors, shelf } = props.data;
+  const image = props.data.imageLinks.thumbnail;
 
   return (
     <li>
@@ -12,11 +13,15 @@ const Book = props => {
             style={{
               width: 128,
               height: 193,
-              backgroundImage: { image }
+              backgroundImage: `url("${image}")`
             }}
           />
           <div className="book-shelf-changer">
-            <select>
+            <select
+              value={shelf}
+              onChange={event =>
+                props.handleShelfChange(props.data, event.target.value)}
+            >
               <option value="none" disabled>
                 Move to...
               </option>
@@ -31,7 +36,11 @@ const Book = props => {
           {title}
         </div>
         <div className="book-authors">
-          {authors}
+          {authors.map(author =>
+            <div key={author}>
+              {author}
+            </div>
+          )}
         </div>
       </div>
     </li>

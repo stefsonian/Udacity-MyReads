@@ -1,33 +1,43 @@
 import React, { Component } from "react";
+import _ from "lodash";
 import Shelf from "./Shelf";
 import { Link } from "react-router-dom";
+import * as BooksAPI from "../BooksAPI.js";
 
 class Books extends Component {
   state = {
-    books: [
-      {
-        status: "current",
-        title: "book title",
-        image:
-          'url("http://books.google.com/books/content?id=PGR2AwAAQBAJ&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE73-GnPVEyb7MOCxDzOYF1PTQRuf6nCss9LMNOSWBpxBrz8Pm2_mFtWMMg_Y1dx92HT7cUoQBeSWjs3oEztBVhUeDFQX6-tWlWz1-feexS0mlJPjotcwFqAg6hBYDXuK_bkyHD-y&source=gbs_api")',
-        authors: "book authors"
-      },
-      {
-        status: "wishlist",
-        title: "book title2",
-        image:
-          'url("http://books.google.com/books/content?id=uu1mC6zWNTwC&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE73pGHfBNSsJG9Y8kRBpmLUft9O4BfItHioHolWNKOdLavw-SLcXADy3CPAfJ0_qMb18RmCa7Ds1cTdpM3dxAGJs8zfCfm8c6ggBIjzKT7XR5FIB53HHOhnsT7a0Cc-PpneWq9zX&source=gbs_api")',
-        authors: "book authors2"
-      },
-      {
-        status: "read",
-        title: "book title3",
-        image:
-          'url("http://books.google.com/books/content?id=uu1mC6zWNTwC&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE73pGHfBNSsJG9Y8kRBpmLUft9O4BfItHioHolWNKOdLavw-SLcXADy3CPAfJ0_qMb18RmCa7Ds1cTdpM3dxAGJs8zfCfm8c6ggBIjzKT7XR5FIB53HHOhnsT7a0Cc-PpneWq9zX&source=gbs_api")',
-        authors: "book authors3"
-      }
-    ]
+    books: []
   };
+
+  componentDidMount() {
+    this.fetchAllBooks();
+  }
+
+  fetchAllBooks() {
+    BooksAPI.getAll().then(books => {
+      this.setState({ books });
+      console.log(books);
+    });
+  }
+
+  handleShelfChange(book, newShelf) {
+    this.optimisticUpdate(book, newShelf);
+    console.log(`Placing '${book.title}' on the ${newShelf} shelf`);
+    BooksAPI.update(book, newShelf).then(this.fetchAllBooks());
+  }
+
+  optimisticUpdate(book, shelf) {
+    // Optimistically perform the update for a better user experience
+    // The change is rolled back if the DB update is unsuccessful.
+    let books = this.state.books;
+    let index = _.findIndex(books, { id: book.id });
+    books[index].shelf = shelf;
+    this.setState({ books });
+  }
+
+  filterByStatus(status) {
+    return this.state.books.filter(book => book.shelf === status);
+  }
 
   render() {
     return (
@@ -39,15 +49,18 @@ class Books extends Component {
           <div>
             <Shelf
               title="Currently reading"
-              books={this.state.books.filter(b => b.status === "current")}
+              books={this.filterByStatus("currentlyReading")}
+              handleShelfChange={this.handleShelfChange.bind(this)}
             />
             <Shelf
               title="Want to read"
-              books={this.state.books.filter(b => b.status === "wishlist")}
+              books={this.filterByStatus("wantToRead")}
+              handleShelfChange={this.handleShelfChange.bind(this)}
             />
             <Shelf
               title="Read"
-              books={this.state.books.filter(b => b.status === "read")}
+              books={this.filterByStatus("read")}
+              handleShelfChange={this.handleShelfChange.bind(this)}
             />
           </div>
           <div className="open-search">

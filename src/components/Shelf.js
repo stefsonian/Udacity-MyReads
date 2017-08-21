@@ -12,7 +12,13 @@ const Shelf = props => {
       <div className="bookshelf-books">
         <ol className="books-grid">
           {books.map(book => {
-            return <Book key={book.title} data={book} />;
+            return (
+              <Book
+                key={book.title}
+                data={book}
+                handleShelfChange={props.handleShelfChange}
+              />
+            );
           })}
         </ol>
       </div>
