@@ -16,7 +16,6 @@ class Books extends Component {
   fetchAllBooks() {
     BooksAPI.getAll().then(books => {
       this.setState({ books });
-      console.log(books);
     });
   }
 
@@ -27,7 +26,7 @@ class Books extends Component {
   }
 
   optimisticUpdate(book, shelf) {
-    // Optimistically perform the update for a better user experience
+    // Optimistically perform the update for a snappier user experience
     // The change is rolled back if the DB update is unsuccessful.
     let books = this.state.books;
     let index = _.findIndex(books, { id: book.id });

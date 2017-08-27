@@ -2,7 +2,9 @@ import React from "react";
 
 const Book = props => {
   const { title, authors, shelf } = props.data;
-  const image = props.data.imageLinks.thumbnail;
+  const image = props.data.hasOwnProperty("imageLinks")
+    ? props.data.imageLinks.thumbnail
+    : "";
 
   return (
     <li>
@@ -33,14 +35,16 @@ const Book = props => {
           </div>
         </div>
         <div className="book-title">
-          {title}
+          {title ? title : ""}
         </div>
         <div className="book-authors">
-          {authors.map(author =>
-            <div key={author}>
-              {author}
-            </div>
-          )}
+          {authors
+            ? authors.map(author =>
+                <div key={author}>
+                  {author}
+                </div>
+              )
+            : ""}
         </div>
       </div>
     </li>

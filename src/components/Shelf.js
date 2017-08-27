@@ -14,7 +14,7 @@ const Shelf = props => {
           {books.map(book => {
             return (
               <Book
-                key={book.title}
+                key={book.id}
                 data={book}
                 handleShelfChange={props.handleShelfChange}
               />
