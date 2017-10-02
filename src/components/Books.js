@@ -5,9 +5,12 @@ import { Link } from "react-router-dom";
 import * as BooksAPI from "../BooksAPI.js";
 
 class Books extends Component {
-  state = {
-    books: []
-  };
+  constructor(props) {
+    super(props);
+    this.state = { books: [] };
+
+    this.handleShelfChange = this.handleShelfChange.bind(this);
+  }
 
   componentDidMount() {
     this.fetchAllBooks();
@@ -21,8 +24,7 @@ class Books extends Component {
 
   handleShelfChange(book, newShelf) {
     this.optimisticUpdate(book, newShelf);
-    console.log(`Placing '${book.title}' on the ${newShelf} shelf`);
-    BooksAPI.update(book, newShelf).then(this.fetchAllBooks());
+    this.props.handleShelfChange(book, newShelf);
   }
 
   optimisticUpdate(book, shelf) {
@@ -49,17 +51,17 @@ class Books extends Component {
             <Shelf
               title="Currently reading"
               books={this.filterByStatus("currentlyReading")}
-              handleShelfChange={this.handleShelfChange.bind(this)}
+              handleShelfChange={this.handleShelfChange}
             />
             <Shelf
               title="Want to read"
               books={this.filterByStatus("wantToRead")}
-              handleShelfChange={this.handleShelfChange.bind(this)}
+              handleShelfChange={this.handleShelfChange}
             />
             <Shelf
               title="Read"
               books={this.filterByStatus("read")}
-              handleShelfChange={this.handleShelfChange.bind(this)}
+              handleShelfChange={this.handleShelfChange}
             />
           </div>
           <div className="open-search">

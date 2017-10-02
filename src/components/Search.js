@@ -30,7 +30,7 @@ class Search extends Component {
       <Book
         key={book.id}
         data={book}
-        handleShelfChange={this.handleShelfChange}
+        handleShelfChange={this.props.handleShelfChange}
       />
     );
   }
