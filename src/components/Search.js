@@ -10,25 +10,44 @@ class Search extends Component {
     this.state = { term: "", books: [] };
 
     this.handleTermChange = this.handleTermChange.bind(this);
+    this.performSearch = this.performSearch.bind(this);
+  }
+
+  getShelf(book, shelfBooks) {
+    const shelfBook = shelfBooks.find(b => b.id === book.id);
+    return shelfBook ? shelfBook.shelf : "none";
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const books = this.state.books.map(book => {
+      const shelf = this.getShelf(book, nextProps.books);
+      return { ...book, shelf };
+    });
+    this.setState({ books });
   }
 
   resetBooks() {
     this.setState({ books: [] });
   }
 
+  performSearch(term) {
+    BooksAPI.search(term, 50).then(result => {
+      if (result.constructor !== Array) {
+        this.resetBooks();
+      } else {
+        const books = result.map(book => {
+          const shelf = this.getShelf(book, this.props.books);
+          return { ...book, shelf };
+        });
+        this.setState({ books });
+      }
+    });
+  }
+
   handleTermChange(event) {
     let term = event.target.value;
     this.setState({ term });
     term.length > 0 ? this.performSearch(term) : this.resetBooks();
-  }
-
-  performSearch(term) {
-    BooksAPI.search(term, 50).then(
-      books =>
-        books.constructor === Array // check if any books found
-          ? this.setState({ books })
-          : this.resetBooks() // clear books state if no match found
-    );
   }
 
   renderBooks() {
