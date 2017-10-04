@@ -1,16 +1,22 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+import { DebounceInput } from "react-debounce-input";
 import * as BooksAPI from "../BooksAPI";
 import Book from "./Book";
 
 class Search extends Component {
-  state = { term: "", books: [] };
+  constructor(props) {
+    super(props);
+    this.state = { term: "", books: [] };
+
+    this.handleTermChange = this.handleTermChange.bind(this);
+  }
 
   resetBooks() {
     this.setState({ books: [] });
   }
 
-  handleChange(event) {
+  handleTermChange(event) {
     let term = event.target.value;
     this.setState({ term });
     term.length > 0 ? this.performSearch(term) : this.resetBooks();
@@ -56,11 +62,11 @@ class Search extends Component {
               However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if
               you don't find a specific author or title. Every search is limited by search terms.
             */}
-            <input
-              type="text"
+            <DebounceInput
+              minLength={1}
+              debounceTimeout={500}
               value={this.state.term}
-              onChange={this.handleChange.bind(this)}
-              placeholder="Search by title or author"
+              onChange={this.handleTermChange}
             />
           </div>
         </div>
