@@ -1,9 +1,10 @@
 import React, { Component } from "react";
-import { Route } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 import * as BooksAPI from "./BooksAPI";
 import "./App.css";
 import Books from "./components/Books";
 import Search from "./components/Search";
+import Four0Four from "./components/Four0Four";
 
 class BooksApp extends Component {
   constructor(props) {
@@ -24,31 +25,38 @@ class BooksApp extends Component {
     });
   }
 
-  handleShelfChange(book, newShelf) {
-    console.log(`Placing '${book.title}' on the ${newShelf} shelf`);
-    BooksAPI.update(book, newShelf).then(this.fetchAllBooks());
-  }
+  handleShelfChange = (book, newShelf) => {
+    BooksAPI.update(book, newShelf).then(() => {
+      book.shelf = newShelf;
+      this.setState(previousState => ({
+        books: previousState.books.filter(b => b.id !== book.id).concat([book])
+      }));
+    });
+  };
 
   render() {
     return (
       <div className="app">
-        <Route
-          path="/"
-          exact={true}
-          render={() =>
-            <Books
-              books={this.state.books}
-              handleShelfChange={this.handleShelfChange}
-            />}
-        />
-        <Route
-          path="/search"
-          render={() =>
-            <Search
-              books={this.state.books}
-              handleShelfChange={this.handleShelfChange}
-            />}
-        />
+        <Switch>
+          <Route
+            path="/"
+            exact={true}
+            render={() =>
+              <Books
+                books={this.state.books}
+                handleShelfChange={this.handleShelfChange}
+              />}
+          />
+          <Route
+            path="/search"
+            render={() =>
+              <Search
+                books={this.state.books}
+                handleShelfChange={this.handleShelfChange}
+              />}
+          />
+          <Route component={Four0Four} />
+        </Switch>
       </div>
     );
   }

@@ -60,11 +60,6 @@ class Search extends Component {
     );
   }
 
-  handleShelfChange(book, newShelf) {
-    console.log(`Placing '${book.title}' on the ${newShelf} shelf`);
-    BooksAPI.update(book, newShelf);
-  }
-
   render() {
     return (
       <div className="search-books">
